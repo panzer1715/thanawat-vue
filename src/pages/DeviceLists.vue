@@ -45,24 +45,26 @@
 </template>
 
 <script>
-import axios from "axios";
+import { mapActions, mapGetters } from "vuex";
 import AddDevice from "@/components/AddDevice";
 export default {
   name: "DeviceLists",
   components: {
     AddDevice,
   },
-  data: () => ({
-    devices: [],
-    lastDevices: 0,
-  }),
-  async created() {
-    const { data } = await axios.get(
-      `https://device-order.herokuapp.com/devices`
-    );
-    let lastIndex = data.length - 1;
-    this.lastDevices = Number(data[lastIndex].DeviceID) + 1;
-    this.devices = data.sort((a, b) => b.DeviceID - a.DeviceID);
+  computed: {
+    ...mapGetters({
+      lastDevices: "getLastDevice",
+      devices: "getDevices",
+    }),
+  },
+  created() {
+    this.getDataOfDevices();
+  },
+  methods: {
+    ...mapActions({
+      getDataOfDevices: "getDataOfDeviceLists",
+    }),
   },
 };
 </script>
