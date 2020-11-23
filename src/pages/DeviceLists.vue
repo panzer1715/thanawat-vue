@@ -14,7 +14,7 @@
         </button>
       </div>
     </div>
-    <AddDevice></AddDevice>
+    <AddDevice :defaultId="lastDevices"></AddDevice>
     <table class="table table-sm">
       <thead>
         <tr>
@@ -27,26 +27,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th>1</th>
-          <td>1</td>
-          <td>Acer - Aspire U</td>
-          <td>All in One</td>
-          <td>1900</td>
+        <tr v-for="device in devices" :key="device.id">
+          <th>{{ device.DeviceID }}</th>
+          <td>{{ device.ManufacturerID }}</td>
+          <td>{{ device.DeviceName }}</td>
+          <td>{{ device.DeviceType }}</td>
+          <td>{{ device.Price }}</td>
           <th>
-            <router-link to="/detail/1"
-              ><i class="fa fa-file-o"></i
-            ></router-link>
-          </th>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td>2</td>
-          <td>Acer - Aspire M</td>
-          <td>Ultrabook</td>
-          <td>700</td>
-          <th>
-            <router-link to="/detail/2"
+            <router-link :to="`/detail/${device.id}`"
               ><i class="fa fa-file-o"></i
             ></router-link>
           </th>
@@ -57,11 +45,24 @@
 </template>
 
 <script>
+import axios from "axios";
 import AddDevice from "@/components/AddDevice";
 export default {
   name: "DeviceLists",
   components: {
     AddDevice,
+  },
+  data: () => ({
+    devices: [],
+    lastDevices: 0,
+  }),
+  async created() {
+    const { data } = await axios.get(
+      `https://device-order.herokuapp.com/devices`
+    );
+    let lastIndex = data.length - 1;
+    this.lastDevices = Number(data[lastIndex].DeviceID) + 1;
+    this.devices = data.sort((a, b) => b.DeviceID - a.DeviceID);
   },
 };
 </script>
